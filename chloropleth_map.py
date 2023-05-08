@@ -3,7 +3,6 @@ import numpy as py
 import csv
 import plotly.express as px
 import json
-from main import parse_dataframe
 
 
 
