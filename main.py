@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 
+from GeographicConversionHandler import GeographicConversionHandler
 from SmallDate import SmallDate
 
 
@@ -8,16 +9,33 @@ def get_dataset(path) -> pd.DataFrame:
     df = pd.read_csv(path)
     return df
 
+# Outside loop so the program runs fast
+geoConvHandler = GeographicConversionHandler()
+Barnet_areas = geoConvHandler.Barnet_LSOA()
+Ward_dict = geoConvHandler.LSOA_to_ward()
+
 def parse_dataframe(path):
     df = get_dataset(path)
 
     # First we drop the columns with null LSOA, as they are few and not useful for out anaylisis
     df.drop(df[df['LSOA code'].isnull()].index, inplace=True)
+    # Second begining we check that the labels are valid
+    assert not set(df['LSOA code'])-geoConvHandler.all_LSOA(), 'There are codes not registered in our geoHandler'
 
-    df_burglaries = df[df["Crime type"] == "Burglary"]
+    # Third we filter all those in Barnet
+    df = df[df['LSOA code'].isin(Barnet_areas)]
 
-    #df_burglaries.drop(columns=["Context"], inplace=True)
-    return df_burglaries
+    # Fourth we take only the burglary ones
+    df = df[df["Crime type"] == "Burglary"]
+
+    # Fifth we drop useless columns
+    df.drop(columns=["Context"], inplace=True) # Nan column
+    df.drop(columns=['Reported by','Falls within',"Longitude", "Latitude", "Location", "LSOA name", "Last outcome category"], inplace=True) # useless
+
+    # Sixth, we add a Ward column
+    df['Ward'] = df['LSOA code'].map(Ward_dict)
+
+    return df
 
 def join_parsed_dataframes(date_initial, date_final_inclusive):
     df_all = None
