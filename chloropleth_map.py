@@ -6,8 +6,8 @@ import json
 
 
 
-dataset = pd.read_csv('data/january_2022_to_march_2023.csv')
-with open('data/lsoa.geojson','r') as geojsonfile:
+dataset = pd.read_csv('ProcessedData/january_2022_to_march_2023.csv')
+with open('RawCrimeData/lsoa.geojson', 'r') as geojsonfile:
     geojson = json.load(geojsonfile)
 
 
