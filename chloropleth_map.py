@@ -3,18 +3,23 @@ import numpy as py
 import csv
 import plotly.express as px
 import json
+from main import parse_dataframe
 
 
 
-dataset = pd.read_csv('ProcessedData/january_2022_to_march_2023.csv')
-with open('RawCrimeData/lsoa.geojson', 'r') as geojsonfile:
+dataset = pd.read_csv('CrimeData/Processed/january_2022_to_march_2023.csv')
+with open('GeographicalData/Raw/lsoa.geojson', 'r') as geojsonfile:
     geojson = json.load(geojsonfile)
+
+dataset.drop(dataset[dataset['LSOA code'].isnull()].index, inplace=True)
 
 
 grouped_data = dataset.groupby(['LSOA code'])['Crime ID'].agg('count')
 print(grouped_data)
 dictionary = grouped_data.to_dict()
 print(dictionary)
+
+
 
 dataset['count'] = dataset['LSOA code'].apply(lambda x: dictionary[x])
 print(dataset)

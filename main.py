@@ -10,6 +10,10 @@ def get_dataset(path) -> pd.DataFrame:
 
 def parse_dataframe(path):
     df = get_dataset(path)
+
+    # First we drop the columns with null LSOA, as they are few and not useful for out anaylisis
+    df.drop(df[df['LSOA code'].isnull()].index, inplace=True)
+
     df_burglaries = df[df["Crime type"] == "Burglary"]
 
     #df_burglaries.drop(columns=["Context"], inplace=True)
@@ -21,7 +25,7 @@ def join_parsed_dataframes(date_initial, date_final_inclusive):
 
     while iteration_date.smaller_than_or_equal_to(date_final_inclusive):
         year_str, month_str = str(iteration_date)[:4], str(iteration_date)[-2:]
-        path = f'RawCrimeData/{year_str}-{month_str}-metropolitan-street.csv'
+        path = f'CrimeData/Raw/{year_str}-{month_str}-metropolitan-street.csv'
         iteration_df = parse_dataframe(path)
 
         if df_all is None:
@@ -35,7 +39,7 @@ def join_parsed_dataframes(date_initial, date_final_inclusive):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     january_2022_to_march_2023 = join_parsed_dataframes(SmallDate(2022,1), SmallDate(2023,3))
-    january_2022_to_march_2023.to_csv("./ProcessedData/january_2022_to_march_2023.csv")
+    january_2022_to_march_2023.to_csv("./CrimeData/Processed/january_2022_to_march_2023.csv")
     April_2020_to_march_2023 = join_parsed_dataframes(SmallDate(2020, 4), SmallDate(2023, 3))
-    April_2020_to_march_2023.to_csv("./ProcessedData/April_2020_to_march_2023.csv")
+    April_2020_to_march_2023.to_csv("./CrimeData/Processed/April_2020_to_march_2023.csv")
 
