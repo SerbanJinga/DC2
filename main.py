@@ -1,5 +1,9 @@
-from ProcessData import pre_process_raw_data, pivot_table
+from ProcessData import pre_process_raw_data, pivot_table, join_parsed_dataframes
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from SmallDate import SmallDate
+
 # Press the green button in the gutter to run the script.
 
 
@@ -16,12 +20,5 @@ except:
 
 
 if __name__ == '__main__':
-
-    # test
-    print(len(burglary_data_April_2020_to_march_2023['Ward'].unique())==21)
-    # Pivot
-    print("Will turn data to pivot")
-    print('='*50)
-    print(pivot_table(burglary_data_April_2020_to_march_2023))
-    print('=' * 50)
-
+    pivot_all_data = pd.read_csv("./CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
+    print(pivot_all_data)
