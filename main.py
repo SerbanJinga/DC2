@@ -20,5 +20,5 @@ except:
 
 
 if __name__ == '__main__':
-    pivot_all_data = pd.read_csv("./CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
-    print(pivot_all_data)
+    data = join_parsed_dataframes(SmallDate(2012, 12), SmallDate(2023, 3))
+    data.to_csv("./CrimeData/Processed/Barnet_all_crimes.csv")

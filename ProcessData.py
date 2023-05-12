@@ -25,7 +25,7 @@ def parse_dataframe(path):
     df = df[df['LSOA code'].isin(Barnet_areas)]
 
     # Fourth we take only the burglary ones
-    df = df[df["Crime type"] == "Burglary"]
+    #df = df[df["Crime type"] == "Burglary"]
 
     # Fifth we drop useless columns
     df.drop(columns=["Context"], inplace=True) # Nan column
