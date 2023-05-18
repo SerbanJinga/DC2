@@ -42,9 +42,9 @@ if __name__ == "__main__":
     model.add(LSTM(50, input_shape=(5965, 1)))
     model.add(Dense(1))
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(X_train, y_train, epochs=2, batch_size=1)
+    hs = model.fit(X_train, y_train, epochs=10, batch_size=1)
 
     predicted_scaled = model.predict(X_test)
     predicted = scaler.inverse_transform(predicted_scaled)
-    print(df_train["Month"])
+    print(hs.history)
     print(predicted)
