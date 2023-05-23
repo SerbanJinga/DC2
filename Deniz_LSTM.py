@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
+from keras.layers import LeakyReLU
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import mean_squared_error
 
@@ -26,12 +27,11 @@ if __name__ == "__main__":
     ##  Defining the LSTM model  ##
     model = Sequential()
     model.add(LSTM(units=64, input_shape=(1, 1)))
-    model.add(Dense(units=1, activation='sigmoid'))
+    model.add(Dense(units=1, activation='relu'))
+    # model.add(LeakyReLU(alpha=0.05))
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     ward_dict = {}
-
-
 
     for ward in wards:
         # Filter the dataset for the current ward
@@ -72,15 +72,8 @@ if __name__ == "__main__":
     result = result.rename(columns = {0: 'Ward',1: 'predicted_count'})
     result = result.set_index('Ward')
     count = result['predicted_count']
-    result["Scaled"] = (count - count.min())/count.max()
+    result["Percentage"] = ((count)/count.sum())*100
     print(result)
-
-
-
-
-
-
-
 
 
 
