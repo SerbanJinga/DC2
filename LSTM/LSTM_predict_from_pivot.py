@@ -14,7 +14,7 @@ df['Ward'] = ward_encoder[0]
 X = df.iloc[:, :-1]  # Exclude the last column (target)
 y = df.iloc[:, -1]   # Target column
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
 
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
@@ -29,7 +29,7 @@ model = tf.keras.models.Sequential([
 
 model.compile(optimizer='adam', loss='mse')
 
-model.fit(X_train, y_train, epochs=200, batch_size=32, validation_data=(X_test, y_test))
+model.fit(X_train, y_train, epochs=200, batch_size=512, validation_data=(X_test, y_test))
 rmse = model.evaluate(X_test, y_test)
 print(f"Model evaluation: {rmse}")
 predictions = model.predict(X_test)
