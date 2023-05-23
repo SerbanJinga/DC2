@@ -15,12 +15,8 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
 X, y, dates = create_convolutional_data(data=df, historic_data_series=[1], month_power=-1, normalize=True)
 
-<<<<<<< HEAD
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
-=======
 Wards = df[df.columns[0]].values
 X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.5, random_state=42)
->>>>>>> 7845647712625cc240b36249054bacd8838947f4
 
 model = getNet(X_train.shape[1], y_train.shape[1], 1)
 
@@ -29,21 +25,8 @@ model = getNet(X_train.shape[1], y_train.shape[1], 1)
 def run_single_model():
     history = model.fit(X_train, y_train, epochs=200, batch_size=15, validation_data=(X_test, y_test))
 
-<<<<<<< HEAD
-model.fit(X_train, y_train, epochs=200, batch_size=512, validation_data=(X_test, y_test))
-rmse = model.evaluate(X_test, y_test)
-print(f"Model evaluation: {rmse}")
-predictions = model.predict(X_test)
-actual = []
-for i in y_test:
-    actual.append(i)
-preds = []
-for j in predictions:
-    preds.append(j[0])
-=======
     rmse_loss = np.sqrt(np.array(history.history['loss'], dtype=np.float64))
     rmse_val_loss = np.sqrt(np.array(history.history['val_loss'], dtype=np.float64))
->>>>>>> 7845647712625cc240b36249054bacd8838947f4
 
     print(f'rms train: {rmse_loss[-1]}')
     print(f'rms test: {rmse_val_loss[-1]}')
