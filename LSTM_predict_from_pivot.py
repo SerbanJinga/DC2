@@ -3,16 +3,15 @@ import pandas as pd
 import tensorflow as tf
 
 from Net import getNet
-
 from LinearRegressionAnalysis import create_convolutional_data
-
+# from ..LinearRegressionAnalysis import create_convolutional_data
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
 """---DATA AND MODEL CREATION---"""
 
-df = pd.read_csv("../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
+df = pd.read_csv("CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
 X, y, dates = create_convolutional_data(data=df, historic_data_series=[1], month_power=-1, normalize=True)
 
 Wards = df[df.columns[0]].values
