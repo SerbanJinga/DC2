@@ -5,11 +5,7 @@ import seaborn as sns
 
 from SmallDate import SmallDate
 
-main_pivot_data = pd.read_csv('CrimeData/Processed/Pivot_December_2012_to_march_2023.csv')
 
-NumericData = np.array(main_pivot_data.values[:, 1:], dtype=np.float64)
-
-target = NumericData
 
 
 def getVectorAtTime(data, year, month, normalize=False):
@@ -69,28 +65,33 @@ def trainLinearModel(Phi, Y, dates, percentTrain):
     A = Y_train @ Phi_train.T @ np.linalg.pinv(Phi_train @ Phi_train.T)
     Delta = Y - A @ Phi
 
-    rms = np.sqrt(np.mean(Delta ** 2))
+    rms_train = np.sqrt(np.mean(Delta[:, :trainSamples] ** 2))
+    rms_test = np.sqrt(np.mean(Delta[:, trainSamples:] ** 2))
 
-    return A, Delta, rms
+    return A, Delta, rms_train, rms_test
 
 
-def experiment_results(A, Delta, rms):
-    print(f'rms: {rms}')
+def experiment_results(A, Delta, rms_train, rms_test):
+    print(f'rms train: {rms_train}')
+    print(f'rms test: {rms_test}')
     figure, axes = plt.subplots(ncols=2)
     ax1, ax2 = axes
     ax1.plot(np.abs(Delta).mean(axis=0))
     ax2 = sns.heatmap(np.abs(A))
     plt.show()
 
+if __name__ == '__main__':
 
-Phi, Y, dates = create_convolutional_data(main_pivot_data, [1], month_power=-1, normalize=True)
-A, Delta, rms = trainLinearModel(Phi, Y, dates, .5)
+    main_pivot_data = pd.read_csv('CrimeData/Processed/Pivot_December_2012_to_march_2023.csv')
 
-#print([str(iter) for iter in dates])
+    Phi, Y, dates = create_convolutional_data(main_pivot_data, [1], month_power=-1, normalize=True)
+    A, Delta, rms_train, rms_test = trainLinearModel(Phi, Y, dates, .5)
 
-total_crimes = np.array([np.sum(getVectorAtTime(main_pivot_data, Iter_date.year, Iter_date.month)) for Iter_date in dates])
+    #print([str(iter) for iter in dates])
 
-rms_unnorm = np.sqrt(np.mean((Delta*total_crimes)**2))
-print(f'unnormalized equiv rms: {rms_unnorm}')
+    total_crimes = np.array([np.sum(getVectorAtTime(main_pivot_data, Iter_date.year, Iter_date.month)) for Iter_date in dates])
 
-experiment_results(A, Delta, rms)
+    rms_unnorm = np.sqrt(np.mean((Delta*total_crimes)**2))
+    print(f'unnormalized equiv rms: {rms_unnorm}')
+
+    experiment_results(A, Delta, rms_train, rms_test)
