@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, BatchNormalization, Dropout
 
@@ -18,9 +19,8 @@ def getNet(input_shape, output_shape, net_id):
 
 def getOneLayerSimple(input_size, output_size):
     model = Sequential([
-        Dense(10, activation='relu', input_shape=(input_size,)),
+        Dense(10, activation='sigmoid', input_shape=(input_size,)),
         Dense(output_size, activation='softmax')])
-    model.compile(optimizer='adam', loss='mse')
 
     return model
 
@@ -29,7 +29,6 @@ def getNoLayerSimple(input_size, output_size):
     model = Sequential([
         Dense(output_size, activation='softmax', input_shape=(input_size,))
     ])
-    model.compile(optimizer='adam', loss='mse')
 
     return model
 
@@ -41,7 +40,6 @@ def getFirstLSTM(input_shape, output_shape):
         Dense(10, activation='relu'),
         Dense(output_shape[1], activation='softmax')
     ])
-    model.compile(optimizer='adam', loss='mse')
 
     return model
 
@@ -56,6 +54,5 @@ def getSecondLSTM(input_shape, output_shape):
         Dense(100, activation='relu'),
         Dense(output_shape[1], activation='softmax')
     ])
-    model.compile(optimizer='adam', loss='mse')
 
     return model

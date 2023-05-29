@@ -65,8 +65,8 @@ def trainLinearModel(Phi, Y, dates, percentTrain):
     A = Y_train @ Phi_train.T @ np.linalg.pinv(Phi_train @ Phi_train.T)
     Delta = Y - A @ Phi
 
-    rms_train = np.sqrt(np.mean(Delta[:, :trainSamples] ** 2))
-    rms_test = np.sqrt(np.mean(Delta[:, trainSamples:] ** 2))
+    rms_train = np.sqrt(np.mean(Delta[:, :trainSamples] ** 2))*np.sqrt(len(Y))
+    rms_test = np.sqrt(np.mean(Delta[:, trainSamples:] ** 2))*np.sqrt(len(Y))
 
     return A, Delta, rms_train, rms_test
 
@@ -76,13 +76,14 @@ def experiment_results(A, Delta, rms_train, rms_test):
     print(f'rms test: {rms_test}')
     figure, axes = plt.subplots(ncols=2)
     ax1, ax2 = axes
-    ax1.plot(np.abs(Delta).normalization_mean(axis=0))
+    ax1.plot(np.sqrt(np.sum(Delta**2,axis=0)))
     ax2 = sns.heatmap(np.abs(A))
     plt.show()
 
 if __name__ == '__main__':
-
-    main_pivot_data = pd.read_csv('CrimeData/Processed/Pivot_December_2012_to_march_2023.csv')
+    ward_file = 'CrimeData/Processed/Pivot_December_2012_to_march_2023.csv'
+    LSOA_file = 'CrimeData/Processed/pivot_LSOA.csv'
+    main_pivot_data = pd.read_csv(ward_file)
 
     Phi, Y, dates = create_convolutional_data(main_pivot_data, [1], month_power=-1, normalize=True)
     A, Delta, rms_train, rms_test = trainLinearModel(Phi, Y, dates, .5)

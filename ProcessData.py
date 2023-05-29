@@ -62,8 +62,7 @@ def pre_process_raw_data():
 
 
 def pivot_table(df, index = 'Ward'):
-    index = 'Ward'
     useful_columns_for_pivot = ['Crime ID', "Month", index]
     Usefuldata = df[useful_columns_for_pivot]
     pivot_table = Usefuldata.pivot_table(index=index, columns='Month', values='Crime ID', aggfunc='count')
-    return pivot_table
+    return pivot_table.fillna(0)

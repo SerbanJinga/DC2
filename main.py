@@ -8,4 +8,5 @@ from SmallDate import SmallDate
 
 
 if __name__ == '__main__':
-    pass
+    LSOA_pre = pd.read_csv("./CrimeData/Processed/December_2012_to_march_2023.csv")
+    pivot_table(LSOA_pre, index='LSOA code').to_csv("./CrimeData/Processed/pivot_LSOA.csv")
