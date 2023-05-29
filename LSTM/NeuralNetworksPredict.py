@@ -9,18 +9,35 @@ from LinearRegressionAnalysis import create_convolutional_data
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+nets = [0, 1, 2]
+lstm_nets = [2]
+current_net = 2
+
+LSTM = current_net in lstm_nets
+convolutional_series = [1]
+
+if LSTM:
+    convolutional_series = [1,2,3,4]
 
 """---DATA AND MODEL CREATION---"""
 
 df = pd.read_csv("../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
-X, y, dates = create_convolutional_data(data=df, historic_data_series=[1], month_power=-1, normalize=True)
+X, y, dates = create_convolutional_data(data=df, historic_data_series=convolutional_series, month_power=-1, normalize=True)
 
 Wards = df[df.columns[0]].values
-X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.5, random_state=42, shuffle=False)
+X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.5, shuffle=False)
 
-model = getNet(X_train.shape[1], y_train.shape[1], 1)
+
+if LSTM:
+    time_steps = len(convolutional_series)
+    features = X_train.shape[1]//time_steps
+    X_train = X_train.reshape(X_train.shape[0], time_steps, features)
+    X_test = X_test.reshape(X_test.shape[0], time_steps, features)
+
+model = getNet(X_train.shape, y_train.shape, current_net)
 
 """---MODEL TRAINING AND EVALUATION---"""
+
 
 def run_single_model():
     history = model.fit(X_train, y_train, epochs=200, batch_size=15, validation_data=(X_test, y_test))
@@ -30,7 +47,6 @@ def run_single_model():
 
     print(f'rms train: {rmse_loss[-1]}')
     print(f'rms test: {rmse_val_loss[-1]}')
-
 
     plt.plot(rmse_loss)
     plt.plot(rmse_val_loss)
@@ -42,10 +58,10 @@ def run_single_model():
 
 
 def run_model_battery(number_of_times):
-    rmse_loss, rmse_val_loss = [0]*number_of_times, [0]*number_of_times
+    rmse_loss, rmse_val_loss = [0] * number_of_times, [0] * number_of_times
 
     for n in range(number_of_times):
-        print(f'Working with model number {n+1}')
+        print(f'Working with model number {n + 1}')
         history = model.fit(X_train, y_train, epochs=200, batch_size=15, validation_data=(X_test, y_test), verbose=0)
         rmse_loss[n] = np.sqrt(np.array(history.history['loss'], dtype=np.float64))
         rmse_val_loss[n] = np.sqrt(np.array(history.history['val_loss'], dtype=np.float64))
@@ -56,8 +72,8 @@ def run_model_battery(number_of_times):
     avg_loss = loss_matrix.mean(axis=0)
     avg_val_loss = val_loss_matrix.mean(axis=0)
 
-    print(f'rms train avg: {avg_loss[-1]}; std = {np.std(loss_matrix[:,-1])}')
-    print(f'rms test avg: {avg_val_loss[-1]}; std = {np.std(val_loss_matrix[:,-1])}')
+    print(f'rms train avg: {avg_loss[-1]}; std = {np.std(loss_matrix[:, -1])}')
+    print(f'rms test avg: {avg_val_loss[-1]}; std = {np.std(val_loss_matrix[:, -1])}')
 
     plt.plot(avg_loss)
     plt.plot(avg_val_loss)
@@ -67,5 +83,7 @@ def run_model_battery(number_of_times):
     plt.legend(['train', 'val'], loc='upper left')
     plt.show()
 
+
 if __name__ == '__main__':
-    run_model_battery(1)
+    # run_model_battery(3)
+    run_single_model()
