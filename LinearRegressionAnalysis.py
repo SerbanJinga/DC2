@@ -39,7 +39,7 @@ def create_convolutional_data(data, historic_data_series=[1], month_power=-1, no
             convolution_result = np.array(newConv).flatten()
 
             month = Iter_date.month
-            month_array = np.array([month ** i for i in range(month_power + 1)], dtype=np.float64).flatten()
+            month_array = np.array([(month/12) ** i for i in range(month_power + 1)], dtype=np.float64).flatten()
             newPhi = np.concatenate((convolution_result, month_array))
             Y.append(newY)
             Phi.append(newPhi)
@@ -76,7 +76,7 @@ def experiment_results(A, Delta, rms_train, rms_test):
     print(f'rms test: {rms_test}')
     figure, axes = plt.subplots(ncols=2)
     ax1, ax2 = axes
-    ax1.plot(np.abs(Delta).mean(axis=0))
+    ax1.plot(np.abs(Delta).normalization_mean(axis=0))
     ax2 = sns.heatmap(np.abs(A))
     plt.show()
 
