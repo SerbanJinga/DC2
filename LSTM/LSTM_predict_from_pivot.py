@@ -16,7 +16,7 @@ df = pd.read_csv("../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
 X, y, dates = create_convolutional_data(data=df, historic_data_series=[1], month_power=-1, normalize=True)
 
 Wards = df[df.columns[0]].values
-X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.5, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.5, random_state=42, shuffle=False)
 
 model = getNet(X_train.shape[1], y_train.shape[1], 1)
 
@@ -68,4 +68,4 @@ def run_model_battery(number_of_times):
     plt.show()
 
 if __name__ == '__main__':
-    run_model_battery(5)
+    run_model_battery(1)
