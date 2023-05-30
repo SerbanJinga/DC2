@@ -61,8 +61,9 @@ def pre_process_raw_data():
     April_2020_to_march_2023.to_csv("./CrimeData/Processed/April_2020_to_march_2023.csv")
 
 
-def pivot_table(df, index = 'Ward'):
+def pivot_table(df, index):
+    #index = 'Ward'
     useful_columns_for_pivot = ['Crime ID', "Month", index]
     Usefuldata = df[useful_columns_for_pivot]
     pivot_table = Usefuldata.pivot_table(index=index, columns='Month', values='Crime ID', aggfunc='count')
-    return pivot_table.fillna(0)
+    return pivot_table
