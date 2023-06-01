@@ -105,7 +105,7 @@ def run_model_battery(number_of_times):
 
 
 if __name__ == '__main__':
-    run_model_battery(3)
+    run_model_battery(10)
     #run_single_model()
     current_year = 2023
     # current_month = 1

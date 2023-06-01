@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -42,3 +43,12 @@ class GeographicConversionHandler:
             return set(self.table['LSOA11CD'])
         if self.year == 2021:
             return set(self.table['LSOA21CD'])
+
+    def geo_conv_matrix(self, wards, LSOAs):
+        convesion_matrix = np.zeros((len(wards), len(LSOAs)))
+        geoHandler_dict = self.LSOA_to_ward()
+        for i in range(len(wards)):
+            for j in range(len(LSOAs)):
+                if geoHandler_dict[LSOAs[j]] == wards[i]:
+                    convesion_matrix[i, j] = 1
+        return convesion_matrix
