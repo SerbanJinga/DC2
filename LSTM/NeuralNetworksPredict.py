@@ -3,12 +3,15 @@ import pandas as pd
 import tensorflow as tf
 from keras.optimizers import Adam
 import seaborn as sns
-from Net import getNet
+from LSTM.Net import getNet
+import plotly.express as px
+import json
 
 from LinearRegressionAnalysis import create_convolutional_data
-
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+
+
 
 current_net = 0
 turn_into_z_score = False
@@ -26,12 +29,19 @@ month_power = 2 if not LSTM else -1
 
 """---DATA AND MODEL CREATION---"""
 
+IsLSOA = False
 ward_file = '../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv'
 LSOA_file = '../CrimeData/Processed/pivot_LSOA.csv'
-
-df = pd.read_csv(ward_file)
-X, y, dates = create_convolutional_data(data=df, historic_data_series=convolutional_series, month_power=month_power, normalize=True)
-
+if IsLSOA:
+    df = pd.read_csv(LSOA_file)
+    X, y, dates = create_convolutional_data(data=df, historic_data_series=convolutional_series,
+                                            month_power=month_power, normalize=True)
+    Location = 'LSOA'
+else:
+    df = pd.read_csv(ward_file)
+    X, y, dates = create_convolutional_data(data=df, historic_data_series=convolutional_series,
+                                            month_power=month_power,normalize=True)
+    Location = 'Ward'
 Wards = df[df.columns[0]].values
 X_train, X_test, y_train, y_test = train_test_split(X.T, y.T, test_size=0.4, shuffle=False)
 
@@ -107,43 +117,31 @@ def run_model_battery(number_of_times):
 if __name__ == '__main__':
     run_model_battery(3)
     #run_single_model()
-    current_year = 2023
-    # current_month = 1
-    # dict_months = {
-    #     1: "January",
-    #     2: "February",
-    #     3: "March",
-    #     4: "April",
-    #     5: "May",
-    #     6: "June",
-    #     7: "July",
-    #     8: "August",
-    #     9: "September",
-    #     10: "October",
-    #     11: "November",
-    #     12: "December"}
     predictions = model.predict(X_test)
     predictions_unscaled = ((predictions * normalization_std) + normalization_mean)
-    # ward_prediction = pd.DataFrame({'Wards': Wards, 'Prediction_count': []})
-    # print(ward_prediction)
     ward_dict = {}
     for i, ward in enumerate(Wards):
         ward_dict[ward] = predictions_unscaled[:, i][0]*100
-        print(f'Ward: {ward}, Predicted Crime Count: {predictions_unscaled[:, i]}')
+        print(f'{Location}: {ward}, Predicted Crime Count: {predictions_unscaled[:, i]}')
     ward_predicitions = pd.DataFrame(ward_dict.items())
-    ward_predicitions.rename(columns = {0 : "Ward", 1: "Crime Likelihood"}, inplace = True)
-    ward_predicitions.set_index("Ward")
+    ward_predicitions.rename(columns = {0 : Location, 1: "Crime_Likelihood"}, inplace = True)
+    ward_predicitions.set_index(Location)
+    path = fr'../CrimeData/Processed/model_prediction_{Location}.csv'
+    ward_predicitions.to_csv(path)
 
     plt.figure(figsize=(10, 6))
-    ax = sns.barplot(x='Ward',
-                     y='Crime Likelihood',
+    ax = sns.barplot(x=Location,
+                     y='Crime_Likelihood',
                      data=ward_predicitions)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-    plt.xlabel('Ward')
+    plt.xlabel('Location')
     plt.ylabel('Crime Likelihood')
-    plt.title('Crime Likelihood by Ward')
+    plt.title('Crime Count Distribution')
     plt.tight_layout()
     plt.show()
     print(ward_dict)
     print(ward_predicitions)
-    print(ward_predicitions['Crime Likelihood'].sum())
+    print(ward_predicitions['Crime_Likelihood'].sum())
+
+
+
