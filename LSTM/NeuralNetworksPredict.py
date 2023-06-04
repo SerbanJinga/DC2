@@ -115,7 +115,7 @@ def run_model_battery(number_of_times):
 
 
 if __name__ == '__main__':
-    run_model_battery(3)
+    run_model_battery(10)
     #run_single_model()
     predictions = model.predict(X_test)
     predictions_unscaled = ((predictions * normalization_std) + normalization_mean)
