@@ -12,7 +12,7 @@ with open("../GeographicalData/Raw/lsoa.geojson", "r") as geojsonfile:
     geojson = json.load(geojsonfile)
 featureidkey = "properties.LSOA11CD"
 
-fig = px.choropleth_mapbox(ward_predicitions, geojson=geojson, color='Crime Likelihood',
+fig = px.choropleth_mapbox(ward_predicitions, geojson=geojson, color='Crime_Likelihood',
                            locations=Location, featureidkey=featureidkey,
                            center={"lat": 51.509865, "lon": -0.118092},
                            mapbox_style="carto-positron", zoom=9,

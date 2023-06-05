@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error
 if __name__ == "__main__":
 
     ##  Importing and transposing the transposed_df  ##
-    df = pd.read_csv("CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
+    df = pd.read_csv("../CrimeData/Processed/Pivot_December_2012_to_march_2023.csv")
     df = df.set_index("Ward")
     transposed_df = df.transpose()
     transposed_df = transposed_df.reset_index()

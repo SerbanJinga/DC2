@@ -126,6 +126,25 @@ if __name__ == '__main__':
     ward_predicitions = pd.DataFrame(ward_dict.items())
     ward_predicitions.rename(columns = {0 : Location, 1: "Crime_Likelihood"}, inplace = True)
     ward_predicitions.set_index(Location)
+
+    ## Rounding values ###
+    def largest_remainder_round(df, column_name):
+        total = df[column_name].sum()
+        df['rounded'] = df[column_name] // 1  # Floor division
+        remainder = int(total - df['rounded'].sum())  # Convert remainder to integer
+        rounded_values = df['rounded'].values.tolist()
+        sorted_indices = sorted(range(len(rounded_values)), key=lambda i: -(rounded_values[i] % 1))
+
+        for i in range(remainder):
+            rounded_values[sorted_indices[i]] += 1
+        print(df)
+        df['rounded'] = rounded_values
+
+        return df
+    ward_predicitions = largest_remainder_round(ward_predicitions,'Crime_Likelihood')
+    print(ward_predicitions['rounded'].sum())
+
+    ## Saving the daatframe as csv
     path = fr'../CrimeData/Processed/model_prediction_{Location}.csv'
     ward_predicitions.to_csv(path)
 
@@ -139,9 +158,11 @@ if __name__ == '__main__':
     plt.title('Crime Count Distribution')
     plt.tight_layout()
     plt.show()
-    print(ward_dict)
-    print(ward_predicitions)
-    print(ward_predicitions['Crime_Likelihood'].sum())
+    # print(ward_dict)
+    # print(ward_predicitions)
+
+
+
 
 
 
