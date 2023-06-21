@@ -4,8 +4,6 @@ import csv
 import plotly.express as px
 import json
 
-import shapely
-import topojson
 import geopandas as gpd
 
 ward_predictions = pd.read_csv(r'../CrimeData/Processed/model_prediction_Ward.csv')
